@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results Dashboard — A11y Review Coach</title>
+  <script src="../reports/findings.js"></script>
+  <script src="../reports/metrics.js"></script>
+  <style>
+    /* ── Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --bg:       #ffffff;
+      --surface:  #f7f8fa;
+      --border:   #e5e7eb;
+      --text:     #1f2328;
+      --muted:    #57606a;
+      --accent:   #005fcc;
+      --accent-h: #004aa3;
+      --high:     #b91c1c;
+      --high-bg:  #fef2f2;
+      --med:      #92400e;
+      --med-bg:   #fffbeb;
+      --low:      #065f46;
+      --low-bg:   #ecfdf5;
+      --fixed:    #065f46;
+      --fixed-bg: #ecfdf5;
+      --open:     #92400e;
+      --open-bg:  #fffbeb;
+      --bar-before: #9ca3af;
+      --bar-after:  #005fcc;
+      --radius:   4px;
+      --max-w:    820px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:       #0d1117;
+        --surface:  #161b22;
+        --border:   #30363d;
+        --text:     #e6edf3;
+        --muted:    #8b949e;
+        --accent:   #58a6ff;
+        --accent-h: #79c0ff;
+        --high:     #ff7b72;
+        --high-bg:  #3d1212;
+        --med:      #e3b341;
+        --med-bg:   #3a2e00;
+        --low:      #3fb950;
+        --low-bg:   #0a2d1a;
+        --fixed:    #3fb950;
+        --fixed-bg: #0a2d1a;
+        --open:     #e3b341;
+        --open-bg:  #3a2e00;
+        --bar-before: #4d5566;
+        --bar-after:  #58a6ff;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+
+    /* ── Reset / Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      background: var(--bg);
+      color: var(--text);
+    }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-h); }
+    a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, details:focus-visible summary:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ── Skip link ──────────────────────────────────────────────── */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      z-index: 100;
+    }
+    .skip-link:focus { left: 0; }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 1.25rem; }
+
+    /* ── Header ─────────────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 0;
+    }
+    header h1 { font-size: 1.6rem; }
+    header p  { color: var(--muted); margin-top: 0.25rem; }
+
+    /* ── Section headings ───────────────────────────────────────── */
+    main section { margin: 2.5rem 0; }
+    h2 {
+      font-size: 1.15rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Impact summary ─────────────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 0.75rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-card .val {
+      display: block;
+      font-size: 1.9rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--accent);
+    }
+    .stat-card .lbl {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── Score bars ─────────────────────────────────────────────── */
+    .score-table { width: 100%; border-collapse: collapse; }
+    .score-table th,
+    .score-table td { padding: 0.45rem 0.5rem; text-align: left; vertical-align: middle; }
+    .score-table thead th { font-size: 0.82rem; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+    .score-table tbody tr:nth-child(even) td { background: var(--surface); }
+    .bar-cell { width: 55%; }
+    .bar-wrap { display: flex; flex-direction: column; gap: 3px; }
+    .bar-row  { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+    .bar-row .bar-label { width: 3.2rem; flex-shrink: 0; color: var(--muted); }
+    .bar { height: 14px; border-radius: 3px; min-width: 2px; transition: width 0.3s ease; }
+    .bar-before { background: var(--bar-before); }
+    .bar-after  { background: var(--bar-after); }
+    .bar-row .num { font-weight: 600; color: var(--text); }
+    .legend { display: flex; gap: 1.25rem; font-size: 0.82rem; margin-bottom: 0.75rem; }
+    .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+
+    /* ── Findings explorer ──────────────────────────────────────── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 130px; }
+    .filter-group label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
+    .filter-group select,
+    .filter-group input {
+      padding: 0.35rem 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .finding {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .finding-header {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .finding-id { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; align-self: center; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      line-height: 1.4;
+    }
+    .badge-high   { background: var(--high-bg);  color: var(--high);  border: 1px solid var(--high); }
+    .badge-medium { background: var(--med-bg);   color: var(--med);   border: 1px solid var(--med);  }
+    .badge-low    { background: var(--low-bg);   color: var(--low);   border: 1px solid var(--low);  }
+    .badge-fixed  { background: var(--fixed-bg); color: var(--fixed); border: 1px solid var(--fixed);}
+    .badge-open   { background: var(--open-bg);  color: var(--open);  border: 1px solid var(--open); }
+    .finding-title { font-weight: 600; flex: 1; min-width: 160px; }
+    .finding-meta  { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; font-size: 0.82rem; color: var(--muted); }
+    .finding-body  { padding: 0.75rem 1rem; }
+    .finding-body p { margin-bottom: 0.5rem; }
+    .finding-body strong { color: var(--text); }
+    .affects-list {
+      display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.25rem;
+      list-style: none; padding: 0;
+    }
+    .affects-list li {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.1rem 0.55rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    details summary {
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      padding: 0.3rem 0;
+    }
+    details summary:hover { color: var(--accent-h); }
+    details[open] summary { margin-bottom: 0.35rem; }
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      font-size: 0.82rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── How it works ───────────────────────────────────────────── */
+    .steps { list-style: none; padding: 0; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 1rem;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .steps li:last-child { border-bottom: none; }
+    .step-num {
+      flex-shrink: 0;
+      width: 2rem; height: 2rem;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem;
+    }
+    .step-body h3  { font-size: 1rem; margin-bottom: 0.2rem; }
+    .step-body p   { font-size: 0.9rem; color: var(--muted); }
+    .step-body .feature-tag {
+      display: inline-block;
+      margin-top: 0.3rem;
+      padding: 0.1rem 0.55rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    /* ── Links section ──────────────────────────────────────────── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    .link-card {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.15s;
+    }
+    .link-card:hover { border-color: var(--accent); }
+    .link-card .link-title { font-weight: 600; font-size: 0.95rem; }
+    .link-card .link-desc  { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+    .link-card .link-arrow { align-self: flex-end; margin-top: 0.5rem; color: var(--accent); font-size: 1.1rem; }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 0;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+
+    /* ── Utility ─────────────────────────────────────────────────── */
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .no-findings {
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header role="banner">
+    <div class="wrap">
+      <h1>A11y Review Coach</h1>
+      <p>Automated WCAG 2.2 AA review, fix, and impact analysis — powered by IBM Bob.</p>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="wrap">
+
+      <!-- ── 1. Impact summary ──────────────────────────────────── -->
+      <section aria-labelledby="h-impact">
+        <h2 id="h-impact">Impact Summary</h2>
+        <div class="stats-grid" id="stats-grid">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- ── 2. Per-page score comparison ──────────────────────── -->
+      <section aria-labelledby="h-scores">
+        <h2 id="h-scores">Lighthouse Accessibility Scores — Before &amp; After</h2>
+        <div class="legend" aria-hidden="true">
+          <span><span class="legend-dot" style="background:var(--bar-before)"></span> Before</span>
+          <span><span class="legend-dot" style="background:var(--bar-after)"></span> After</span>
+        </div>
+        <table class="score-table" id="score-table">
+          <caption class="visually-hidden">Lighthouse accessibility score comparison before and after fixes</caption>
+          <thead>
+            <tr>
+              <th scope="col">Page</th>
+              <th scope="col" class="bar-cell">Score</th>
+              <th scope="col">Change</th>
+            </tr>
+          </thead>
+          <tbody id="score-body">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── 3. Findings explorer ───────────────────────────────── -->
+      <section aria-labelledby="h-findings">
+        <h2 id="h-findings">Findings Explorer</h2>
+
+        <div class="filters" role="search" aria-label="Filter findings">
+          <div class="filter-group">
+            <label for="f-severity">Severity</label>
+            <select id="f-severity">
+              <option value="">All severities</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="f-page">Page</label>
+            <select id="f-page">
+              <option value="">All pages</option>
+              <option value="index.html">index.html</option>
+              <option value="book.html">book.html</option>
+              <option value="contact.html">contact.html</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="f-status">Status</label>
+            <select id="f-status">
+              <option value="">All statuses</option>
+              <option value="Fixed">Fixed</option>
+              <option value="Open">Open</option>
+            </select>
+          </div>
+          <div class="filter-group" style="flex: 2; min-width: 200px;">
+            <label for="f-search">Search</label>
+            <input type="search" id="f-search" placeholder="ID, element, WCAG ref, keyword…">
+          </div>
+        </div>
+
+        <p class="results-count" id="results-count" aria-live="polite" aria-atomic="true"></p>
+        <div id="findings-list">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- ── 4. How it works ────────────────────────────────────── -->
+      <section aria-labelledby="h-how">
+        <h2 id="h-how">How It Works</h2>
+        <ol class="steps">
+          <li>
+            <span class="step-num" aria-hidden="true">1</span>
+            <div class="step-body">
+              <h3>Define the skill</h3>
+              <p>A structured <code>a11y-review</code> skill captures the full WCAG 2.2 AA review workflow — discover, classify, fix, report — in a single reusable instruction file Bob loads on demand.</p>
+              <span class="feature-tag">Bob feature: Custom Skills (<code>.bob/skills/</code>)</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">2</span>
+            <div class="step-body">
+              <h3>Parallel subagent review</h3>
+              <p>Three subagents run simultaneously — one per page — each applying the skill and returning a structured findings object. Total review time: ~10 minutes.</p>
+              <span class="feature-tag">Bob feature: Parallel Subagents (<code>spawn_subagent</code>)</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">3</span>
+            <div class="step-body">
+              <h3>Apply fixes</h3>
+              <p>Bob makes targeted, surgical edits to HTML, CSS, and JS for every High and Medium finding, logging a before/after code snippet for each change in <code>FIX_LOG.md</code>.</p>
+              <span class="feature-tag">Bob feature: Agent Mode with <code>apply_diff</code> / <code>search_and_replace</code></span>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">4</span>
+            <div class="step-body">
+              <h3>Verify &amp; measure</h3>
+              <p>Lighthouse audits are run manually before and after; detection rate is computed against the ground-truth issue list and written into <code>metrics.js</code> for this dashboard.</p>
+              <span class="feature-tag">Bob feature: Structured data contracts (<code>window.A11Y_METRICS</code>)</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">5</span>
+            <div class="step-body">
+              <h3>Report</h3>
+              <p>Findings and metrics are serialised into <code>findings.js</code> and <code>metrics.js</code>, loaded here without any build step or CDN — GitHub Pages serves everything as plain static files.</p>
+              <span class="feature-tag">Bob feature: Plan Mode + <code>write_file</code> for structured artefacts</span>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ── 5. Links ───────────────────────────────────────────── -->
+      <section aria-labelledby="h-links">
+        <h2 id="h-links">Links</h2>
+        <div class="links-grid" id="links-grid">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+    </div><!-- /.wrap -->
+  </main>
+
+  <footer role="contentinfo">
+    <div class="wrap">
+      Made with <a href="https://www.ibm.com/bob" rel="noopener noreferrer">IBM Bob</a>
+    </div>
+  </footer>
+
+  <script>
+    var REPO_URL = "https://github.com/Domideva/a11y-review-coach";
+    var findings = (window.A11Y_FINDINGS && window.A11Y_FINDINGS.findings) || [];
+    var metrics  = window.A11Y_METRICS || {};
+
+    /* ── Helpers ──────────────────────────────────────────────── */
+    function esc(s) {
+      return String(s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+    function severityClass(s) {
+      return s === "High" ? "high" : s === "Medium" ? "medium" : "low";
+    }
+
+    /* ── Impact summary ──────────────────────────────────────── */
+    (function buildStats() {
+      var grid = document.getElementById("stats-grid");
+      if (!grid) return;
+
+      var m = metrics;
+      var lh = m.lighthouse || {};
+      var det = m.detection || {};
+      var fixes = m.fixes || {};
+      var time = m.time || {};
+
+      function avg(obj) {
+        var vals = Object.values(obj);
+        return vals.length ? Math.round(vals.reduce(function(a,b){return a+b;},0) / vals.length) : 0;
+      }
+
+      var stats = [
+        { val: (fixes.total || findings.length), lbl: "Issues found" },
+        { val: (fixes.fixed || 0),               lbl: "Issues fixed" },
+        { val: (det.detected || 0) + " of " + (det.seeded || 0), lbl: "Seeded issues detected" },
+        { val: avg(lh.before || {}),              lbl: "Avg Lighthouse score before" },
+        { val: avg(lh.after || {}),               lbl: "Avg Lighthouse score after" },
+        { val: (time.bobMinutes || 0) + " min",   lbl: "Bob review + fix time" },
+        { val: "~" + Math.round((time.manualEstimateMinutes || 0) / 60 * 10) / 10 + " hr", lbl: "Estimated manual time (estimate)" }
+      ];
+
+      grid.innerHTML = stats.map(function(s) {
+        return '<div class="stat-card"><span class="val">' + esc(String(s.val)) + '</span><span class="lbl">' + esc(s.lbl) + '</span></div>';
+      }).join("");
+    })();
+
+    /* ── Score table ─────────────────────────────────────────── */
+    (function buildScores() {
+      var tbody = document.getElementById("score-body");
+      if (!tbody) return;
+      var lh = (metrics.lighthouse) || {};
+      var before = lh.before || {};
+      var after  = lh.after  || {};
+      var pages = ["index", "book", "contact"];
+      var labels = { index: "index.html", book: "book.html", contact: "contact.html" };
+
+      tbody.innerHTML = pages.map(function(p) {
+        var b = before[p] || 0;
+        var a = after[p]  || 0;
+        var delta = a - b;
+        var deltaStr = delta > 0 ? "+" + delta : String(delta);
+        var bw = b + "%";
+        var aw = a + "%";
+        return '<tr>' +
+          '<td>' + esc(labels[p]) + '</td>' +
+          '<td class="bar-cell">' +
+            '<div class="bar-wrap">' +
+              '<div class="bar-row"><span class="bar-label">Before</span><span class="bar bar-before" style="width:' + bw + '" role="presentation"></span><span class="num" aria-label="Before score: ' + b + '">' + b + '</span></div>' +
+              '<div class="bar-row"><span class="bar-label">After</span><span class="bar bar-after" style="width:' + aw + '" role="presentation"></span><span class="num" aria-label="After score: ' + a + '">' + a + '</span></div>' +
+            '</div>' +
+          '</td>' +
+          '<td><strong style="color:' + (delta >= 0 ? 'var(--fixed)' : 'var(--high)') + '">' + esc(deltaStr) + '</strong></td>' +
+        '</tr>';
+      }).join("");
+    })();
+
+    /* ── Findings explorer ───────────────────────────────────── */
+    (function initFindings() {
+      var list    = document.getElementById("findings-list");
+      var counter = document.getElementById("results-count");
+      var fSev    = document.getElementById("f-severity");
+      var fPage   = document.getElementById("f-page");
+      var fStatus = document.getElementById("f-status");
+      var fSearch = document.getElementById("f-search");
+
+      function buildCard(f) {
+        var sc = severityClass(f.severity);
+        var pages = (f.pages || []).join(", ");
+        var affectsHtml = (f.affects || []).map(function(a) {
+          return '<li>' + esc(a) + '</li>';
+        }).join("");
+        var codeHtml = f.fixCode
+          ? '<details><summary>View code fix</summary><pre><code>' + esc(f.fixCode) + '</code></pre></details>'
+          : "";
+        var fileLink = f.file
+          ? '<a href="' + REPO_URL + '/blob/main/' + esc(f.file) + '" target="_blank" rel="noopener noreferrer">' + esc(f.file) + (f.line ? ':' + f.line : '') + '</a>'
+          : "";
+        return '<article class="finding" aria-label="Finding ' + esc(f.id) + '">' +
+          '<div class="finding-header">' +
+            '<span class="finding-id">' + esc(f.id) + '</span>' +
+            '<span class="badge badge-' + sc + '" aria-label="Severity: ' + esc(f.severity) + '">' + esc(f.severity) + '</span>' +
+            '<span class="badge badge-' + (f.status === 'Fixed' ? 'fixed' : 'open') + '" aria-label="Status: ' + esc(f.status) + '">' + esc(f.status) + '</span>' +
+            '<span class="finding-title">' + esc(f.element || '') + '</span>' +
+          '</div>' +
+          '<div class="finding-body">' +
+            '<div class="finding-meta">' +
+              '<span>Page: ' + esc(pages) + '</span>' +
+              (fileLink ? '<span>File: ' + fileLink + '</span>' : '') +
+              '<span>WCAG ' + esc(f.wcag || '') + ' (Level ' + esc(f.level || '') + ')</span>' +
+              '<span>Category: ' + esc(f.category || '') + '</span>' +
+            '</div>' +
+            '<p><strong>Who is affected:</strong></p>' +
+            '<ul class="affects-list">' + affectsHtml + '</ul>' +
+            '<p style="margin-top:0.6rem"><strong>Problem:</strong> ' + esc(f.problem || '') + '</p>' +
+            '<p><strong>Fix:</strong> ' + esc(f.fix || '') + '</p>' +
+            codeHtml +
+          '</div>' +
+        '</article>';
+      }
+
+      function applyFilters() {
+        var sev    = fSev.value;
+        var page   = fPage.value;
+        var status = fStatus.value;
+        var q      = fSearch.value.trim().toLowerCase();
+
+        var filtered = findings.filter(function(f) {
+          if (sev    && f.severity !== sev)    return false;
+          if (status && f.status   !== status) return false;
+          if (page   && !(f.pages || []).includes(page)) return false;
+          if (q) {
+            var haystack = [f.id, f.element, f.wcag, f.category, f.problem, f.fix, f.fixSummary]
+              .join(" ").toLowerCase();
+            if (haystack.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+
+        var n = filtered.length;
+        var total = findings.length;
+        counter.textContent = n + " of " + total + " finding" + (total === 1 ? "" : "s") + " shown";
+
+        if (n === 0) {
+          list.innerHTML = '<div class="no-findings" role="status">No findings match the current filters.</div>';
+        } else {
+          list.innerHTML = filtered.map(buildCard).join("");
+        }
+      }
+
+      [fSev, fPage, fStatus].forEach(function(el) { el.addEventListener("change", applyFilters); });
+      fSearch.addEventListener("input", applyFilters);
+      applyFilters();
+    })();
+
+    /* ── Links ───────────────────────────────────────────────── */
+    (function buildLinks() {
+      var grid = document.getElementById("links-grid");
+      if (!grid) return;
+      var links = [
+        { href: "../sample-app-before/",   title: "Before site",      desc: "Original sample app with seeded issues" },
+        { href: "../sample-app/",          title: "After site",       desc: "Fixed sample app after remediation" },
+        { href: REPO_URL + "/blob/main/reports/A11Y_REVIEW.md",  title: "Review report",    desc: "Full findings report on GitHub" },
+        { href: REPO_URL + "/blob/main/reports/FIX_LOG.md",      title: "Fix log",          desc: "Before/after code for every fix" },
+        { href: REPO_URL + "/blob/main/reports/IMPACT.md",       title: "Impact report",    desc: "Detection rate, score deltas, time saved" },
+        { href: REPO_URL,                  title: "GitHub repository", desc: "Source code and all project files" }
+      ];
+      grid.innerHTML = links.map(function(l) {
+        return '<a class="link-card" href="' + esc(l.href) + '" ' +
+          (l.href.startsWith("http") ? 'target="_blank" rel="noopener noreferrer"' : '') + '>' +
+          '<span class="link-title">' + esc(l.title) + '</span>' +
+          '<span class="link-desc">'  + esc(l.desc)  + '</span>' +
+          '<span class="link-arrow" aria-hidden="true">→</span>' +
+        '</a>';
+      }).join("");
+    })();
+  </script>
+</body>
+</html>
