@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+  <title>Riverside Community Library</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="site-logo">Riverside Community Library</a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="book.html">Book an Event</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="form-section">
+
+    <h1>Book an Event</h1>
+
+    <form id="booking-form" novalidate>
+
+      <div class="form-group">
+        <input type="email" id="email" name="email"
+               placeholder="Your email address"
+               required
+               autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="full-name">Full name</label>
+        <input type="text" id="full-name" name="full-name"
+               placeholder="e.g. Alex Smith"
+               required
+               autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label for="event">Event</label>
+        <select id="event" name="event" required>
+          <option value="">— Select an event —</option>
+          <option value="author-talk">Author Talk: Jane Morris (12 Jul)</option>
+          <option value="coding">Coding for Beginners (17 Jul)</option>
+          <option value="story-hour">Children's Story Hour (20 Jul)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Preferred date</label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="seats">Number of seats</label>
+        <input type="number" id="seats" name="seats"
+               min="1" max="10" value="1" required>
+      </div>
+
+      <div class="form-group">
+        <label for="access-needs">Accessibility needs (optional)</label>
+        <textarea id="access-needs" name="access-needs"
+                  rows="3"
+                  placeholder="e.g. wheelchair space, hearing loop"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" style="display:flex;align-items:center;gap:0.5rem;">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M2 9l5 5L16 4" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+    </form>
+
+  </main>
+
+  <div id="confirmation-modal" class="modal-backdrop" role="dialog">
+    <div class="modal">
+      <button id="modal-close-btn" class="modal-close">&#x2715;</button>
+      <h2>Booking Confirmed!</h2>
+      <p>Thank you for booking. You will receive a confirmation by email.</p>
+      <p style="margin-top:1rem;font-size:0.875rem;color:#666;">
+        Reference: RCL-2025-XXXX
+      </p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 Riverside Community Library · 42 River Road, Riverside · 01234 567890</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
