@@ -85,3 +85,17 @@ raw.githack.com. "Before" pages served from `sample-app-before/`; "After" from `
 - **28 / 29 findings fixed**; the one open item is Low severity.
 - Lighthouse scores rose from an average of 89 to 99 (+10 pts).
 - Estimated time saving: ~334 minutes versus manual review and remediation.
+
+---
+
+## Dogfooding
+
+Reviewing the tool's own dashboard (`dashboard/index.html`) and landing page (`index.html`) with the same `a11y-review` skill revealed **1 Medium and 0 High** issues:
+
+| ID | File | Issue | WCAG | Severity |
+|---|---|---|---|---|
+| D001 | `dashboard/index.html` | `details:focus-visible summary:focus-visible` selector never matches — `<summary>` elements received no visible focus ring | 2.4.7 Focus Visible (AA) | Medium |
+
+All findings were fixed (1 of 1 — 100 % fix rate). `index.html` had no High or Medium issues.
+
+A review tool that skips its own accessibility check undermines the credibility of every report it produces — passing its own review is the minimum bar for being taken seriously.
