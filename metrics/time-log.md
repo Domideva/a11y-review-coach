@@ -5,7 +5,7 @@
 | T1 Plan | | |6| |
 | T2 Skill | | |5| |
 | T3 Sample site | | |10| |
-| T4 Parallel review | | | | |
+| T4 Parallel review | | |10| |
 | T5 Fixes | | | | |
 | T6 Impact | | | | |
 | T7 Dashboard | | | | |

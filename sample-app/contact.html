@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <title>Riverside Community Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact &amp; Visit Us — Riverside Community Library</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <header class="site-header">
     <a href="index.html" class="site-logo">Riverside Community Library</a>
@@ -19,12 +21,18 @@
     </nav>
   </header>
 
-  <main class="contact-section">
+  <main class="contact-section" id="main-content">
 
     <h1>Contact &amp; Visit Us</h1>
 
     <h2>Opening Hours</h2>
     <table class="hours-table">
+      <thead>
+        <tr>
+          <th scope="col">Day</th>
+          <th scope="col">Hours</th>
+        </tr>
+      </thead>
       <tbody>
         <tr>
           <td>Monday – Friday</td>
@@ -47,9 +55,11 @@
 
     <div class="location-map">
       <h2>How to Find Us</h2>
-      <svg width="400" height="220" viewBox="0 0 400 220"
+      <svg role="img" aria-labelledby="map-title"
+           width="400" height="220" viewBox="0 0 400 220"
            xmlns="http://www.w3.org/2000/svg"
            style="border:1px solid #e5e7eb;border-radius:6px;display:block;margin-top:0.75rem;">
+        <title id="map-title">Map showing the library at the corner of River Road and Mill Street</title>
         <rect x="0" y="100" width="400" height="20" fill="#d4d4d4"/>
         <rect x="180" y="0" width="20" height="220" fill="#d4d4d4"/>
         <rect x="40" y="40" width="60" height="50" fill="#bbb"/>
@@ -68,7 +78,7 @@
     <ul style="list-style:none;margin:1rem 0 2rem;line-height:2.2;">
       <li>
         <strong>Phone:</strong>
-        <a href="tel:+441234567890" style="color:#1a1a2e;text-decoration:none;">01234 567890</a>
+        <a href="tel:+441234567890" style="color:#1a1a2e;">01234 567890</a>
       </li>
       <li>
         <strong>Email:</strong>
@@ -82,32 +92,32 @@
     <h2>Frequently Asked Questions</h2>
 
     <div class="faq-item">
-      <button class="faq-toggle">Is library membership free?</button>
-      <div class="faq-body">
+      <button class="faq-toggle" aria-expanded="false" aria-controls="faq-1">Is library membership free?</button>
+      <div class="faq-body" id="faq-1">
         <p>Yes, membership is completely free for all residents of the borough.
            Bring proof of address to the front desk.</p>
       </div>
     </div>
 
     <div class="faq-item">
-      <button class="faq-toggle">Can I book events without being a member?</button>
-      <div class="faq-body">
+      <button class="faq-toggle" aria-expanded="false" aria-controls="faq-2">Can I book events without being a member?</button>
+      <div class="faq-body" id="faq-2">
         <p>Some events are open to everyone; others require a library card.
            The booking page shows which category each event falls into.</p>
       </div>
     </div>
 
     <div class="faq-item">
-      <button class="faq-toggle">Do you have accessible parking?</button>
-      <div class="faq-body">
+      <button class="faq-toggle" aria-expanded="false" aria-controls="faq-3">Do you have accessible parking?</button>
+      <div class="faq-body" id="faq-3">
         <p>Yes, four Blue Badge spaces are available directly outside the
            main entrance on River Road.</p>
       </div>
     </div>
 
     <div class="faq-item">
-      <button class="faq-toggle">How do I return borrowed items?</button>
-      <div class="faq-body">
+      <button class="faq-toggle" aria-expanded="false" aria-controls="faq-4">How do I return borrowed items?</button>
+      <div class="faq-body" id="faq-4">
         <p>Use the self-service return machine in the lobby, available 24/7,
            or hand items to a member of staff during opening hours.</p>
       </div>

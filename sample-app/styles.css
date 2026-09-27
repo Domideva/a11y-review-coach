@@ -4,8 +4,9 @@
   padding: 0;
 }
 
-* {
-  outline: none;
+*:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
 }
 
 body {
@@ -92,8 +93,11 @@ body {
   height: 10px;
   border-radius: 50%;
   background: rgba(255,255,255,0.4);
+  background-clip: content-box;
+  padding: 7px;
   cursor: pointer;
   display: inline-block;
+  border: none;
 }
 
 .hero-dot.active {
@@ -295,4 +299,39 @@ input.error, select.error, textarea.error {
   overflow: hidden;
   clip: rect(0,0,0,0);
   white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+}
+.skip-link:focus {
+  left: 0;
+  width: auto;
+  padding: 0.5rem 1rem;
+  background: #0f3460;
+  color: #fff;
+  text-decoration: none;
+}
+
+.field-error {
+  display: block;
+  color: #a00;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.required-mark {
+  color: #a00;
+  margin-left: 0.2em;
+}
+
+.hours-table th {
+  padding: 0.6rem 1rem;
+  border: 1px solid #e5e7eb;
+  background: #f0f0f5;
+  font-weight: 600;
+  text-align: left;
 }

@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-  <title>Riverside Community Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home — Riverside Community Library</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <header class="site-header">
     <a href="index.html" class="site-logo">Riverside Community Library</a>
@@ -25,26 +27,27 @@
         <h1>Welcome to Riverside Library</h1>
         <p>Your community hub for learning, events, and connection.</p>
       </div>
-      <div class="hero-slide">
+      <div class="hero-slide" aria-hidden="true">
         <h1>Summer Reading Challenge</h1>
         <p>Join hundreds of readers this July and August.</p>
       </div>
-      <div class="hero-slide">
+      <div class="hero-slide" aria-hidden="true">
         <h1>New: Evening Coding Club</h1>
         <p>Every Thursday from 6 pm — all skill levels welcome.</p>
       </div>
     </div>
-    <div class="hero-dots">
-      <span class="hero-dot active"></span>
-      <span class="hero-dot"></span>
-      <span class="hero-dot"></span>
+    <div class="hero-dots" role="group" aria-label="Slide controls">
+      <button class="hero-dot active" aria-label="Go to slide 1" aria-current="true"></button>
+      <button class="hero-dot" aria-label="Go to slide 2"></button>
+      <button class="hero-dot" aria-label="Go to slide 3"></button>
     </div>
   </section>
 
-  <main>
+  <main id="main-content">
 
     <div style="text-align:center;padding:2rem 1rem 0;">
-      <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg"
+           aria-hidden="true" focusable="false">
         <rect x="10" y="20" width="30" height="50" fill="#0f3460"/>
         <rect x="45" y="10" width="30" height="60" fill="#16213e"/>
         <rect x="80" y="30" width="30" height="40" fill="#0f3460"/>
@@ -52,35 +55,35 @@
       </svg>
     </div>
 
-    <h3 class="section-title">Upcoming Events</h3>
+    <h2 class="section-title">Upcoming Events</h2>
 
     <div class="cards">
 
       <div class="card">
         <h3>Author Talk: Jane Morris</h3>
         <p>Saturday 12 July · 2 pm<br>Main Hall · Free entry</p>
-        <a href="book.html" class="card-link">Click here</a>
+        <a href="book.html" class="card-link">Book a seat — Author Talk: Jane Morris</a>
       </div>
 
       <div class="card">
         <h3>Coding for Beginners</h3>
         <p>Thursday 17 July · 6 pm<br>Room 4 · Free entry</p>
-        <a href="book.html" class="card-link">Read more</a>
+        <a href="book.html" class="card-link">Book a seat — Coding for Beginners</a>
       </div>
 
       <div class="card">
         <h3>Children's Story Hour</h3>
         <p>Sunday 20 July · 11 am<br>Children's Wing · Free</p>
-        <a href="book.html" class="card-link">Book a seat</a>
+        <a href="book.html" class="card-link">Book a seat — Children's Story Hour</a>
       </div>
 
     </div>
 
     <div style="text-align:center;padding:1rem 2rem 3rem;">
-      <div id="newsletter-action"
-           style="display:inline-block;background:#0f3460;color:#fff;padding:0.75rem 2rem;border-radius:4px;cursor:pointer;font-size:1rem;">
+      <button id="newsletter-action"
+              style="background:#0f3460;color:#fff;padding:0.75rem 2rem;border-radius:4px;cursor:pointer;font-size:1rem;border:none;">
         Sign up for our newsletter
-      </div>
+      </button>
     </div>
 
   </main>
