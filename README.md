@@ -119,4 +119,4 @@ WCAG references link to the authoritative specification at [w3.org](https://www.
 
 ## Team
 
-Built by [Dominika Devaney](https://github.com/Domideva) as a demonstration of IBM Bob's agentic capabilities for accessibility engineering.
+Built by [Dominic Devasagayam B](https://github.com/Domideva) as a demonstration of IBM Bob's agentic capabilities for accessibility engineering.
