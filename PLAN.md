@@ -212,3 +212,9 @@ Every High and Medium finding is fixed and logged (T5).
 Ground-truth comparison, Lighthouse deltas, and time savings are captured as structured data (T6).
 A vanilla-JS dashboard visualises the impact (T7) and a PR template packages the workflow for reuse (T8).
 All artefacts are plain static files — zero dependencies, zero build steps, zero personal data.
+
+
+
+
+
+
